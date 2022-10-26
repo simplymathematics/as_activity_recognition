@@ -8,9 +8,13 @@ The basic experiment pipeline can be seen with
 ```dvc dag```
 ```mermaid
 flowchart TD
-	node1["classify"]
-	node2["preprocess"]
-	node2-->node1
+	node1["raw_data"]
+	node2["feature extraction"]
+	node3["preprocessor"]
+	node4["feature_selector"]
+	node5["classify"]
+	node6["preprocess"]
+	node1-->node2-->node3-->node4-->node5-->node6
 ```
 DVC docs are [here](dvc.org/doc). 
 

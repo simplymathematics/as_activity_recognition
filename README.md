@@ -12,9 +12,10 @@ flowchart TD
 	node2["feature extraction"]
 	node3["preprocessor"]
 	node4["feature_selector"]
-	node5["classify"]
-	node6["preprocess"]
-	node1-->node2-->node3-->node4-->node5-->node6
+	node5["model"]
+	node6["classify"]
+	node7["preprocess"]
+	node1-->node2-->node3-->node4-->node5-->node6-->node7
 ```
 DVC docs are [here](dvc.org/doc). 
 

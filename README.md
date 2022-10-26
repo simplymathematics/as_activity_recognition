@@ -29,6 +29,8 @@ flowchart TD
 	node11-->node12-->node9
 	node2-->node10
 	node9-->node14
+	node13-->node4
+	node13-->node5
 ```
 DVC docs are [here](dvc.org/doc). 
 

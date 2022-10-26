@@ -13,22 +13,22 @@ flowchart TD
 	node3["preprocessor"]
 	node4["feature_selector"]
 	node5["model"]
-	node6["classify"]
-	node7["preprocess"]
 	node8["pre_process.py"]
 	node9["classify.py"]
 	node10["data.py"]
 	node11["model.py"]
 	node12["experiment.py"]
 	node13["params.yaml"]
-	node1-->node2-->node3-->node4-->node11
-	node5-->node6
+	node14["reports"]
+	node1-->node2-->node3-->node4-->node5-->node11
+	node5-->node9
 	node13-->node8-->node1
 	node8-->node2
 	node13-->node3
 	node10-->node12
 	node11-->node12-->node9
 	node2-->node10
+	node9-->node14
 ```
 DVC docs are [here](dvc.org/doc). 
 

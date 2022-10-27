@@ -7,38 +7,37 @@ stages:
       md5: 05061832277bcebe4cde53dfd13fbde6
       size: 2843808
     - path: pre_process.py
-      md5: c97ed5e4b68a041d37e4c865b245f926
-      size: 4969
-      isexec: true
+      md5: 645fd45c2309a4740e774c0a5e7f65b3
+      size: 6165
     params:
       params.yaml:
-        preprocessing.key: acc
-        preprocessing.stride: 10
-        preprocessing.window: 100
+        preprocessing.key: mag
+        preprocessing.stride: 2
+        preprocessing.window: 10
     outs:
     - path: data
-      md5: 8e94b10c22ab1618ccbbb286ed77a190.dir
-      size: 26192924
-      nfiles: 32
+      md5: a5c8a7baac935771dc4eccc7053b3101.dir
+      size: 23083037
+      nfiles: 34
   classify:
     cmd: python3 classify.py
     deps:
     - path: classify.py
-      md5: c9af2cf7e4215044ea921941e4eb40a7
-      size: 6864
+      md5: 7163553cce9099dd526b3749846ff006
+      size: 7091
     - path: data
-      md5: 8e94b10c22ab1618ccbbb286ed77a190.dir
-      size: 26192924
-      nfiles: 32
+      md5: a5c8a7baac935771dc4eccc7053b3101.dir
+      size: 23083037
+      nfiles: 34
     params:
       params.yaml:
         feature_selector:
           name: sklearn.feature_selection.SelectKBest
-          k: 30
+          k: 100
         model:
           name: sklearn.ensemble.RandomForestClassifier
-          n_estimators: 10
-          max_depth: 1
+          n_estimators: 100
+          max_depth: 10
         pipeline:
         - preprocessor
         - feature_selector
@@ -49,20 +48,20 @@ stages:
           with_mean: true
     outs:
     - path: results/balance.png
-      md5: 2d39e404c4819fd675cc72b246bf412d
-      size: 17959
+      md5: 97af4efe00e0de00e3a4aa0b8dac6aaa
+      size: 17950
     - path: results/classification.png
-      md5: 88749139a76cc582fb51934e4e926b0f
-      size: 31069
+      md5: 6d7fcb4dbd2393eaad4dd8f66779ab05
+      size: 38013
     - path: results/confusion.png
-      md5: ebbeb6e4df19b97921b440eba49f47fb
-      size: 27993
+      md5: 3fb2203214917e7e9a78c8840cb2dd1b
+      size: 28038
     - path: results/rank.png
-      md5: f346d3a8049ac072125f8377cadee78b
-      size: 112199
+      md5: 1655d4e0c009e642729d04bf7ac9ddce
+      size: 114044
     - path: results/scores.json
-      md5: 2c36ff6b2cb4dc442912687ebfa809cb
-      size: 168
+      md5: 575033f19599c18681ebe4694fefff47
+      size: 169
   print:
     cmd: cat params.yaml
   print-params:

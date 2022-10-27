@@ -27,9 +27,7 @@ real = {
 }
 
 
-class Data(
-    collections.namedtuple("Data", "name, shuffle, random_state, train_size, stratify"),
-):
+class Data(collections.namedtuple("Data", "name, shuffle, random_state, train_size, stratify, test_size", defaults = (None, None,))):
     def __new__(cls, loader, node):
         return super().__new__(cls, **loader.construct_mapping(node))
 
@@ -47,15 +45,14 @@ class Data(
             and Path(self.name).exists()
             and str(self.name).endswith(".npz")
         ):
-            data = np.load(self.name)
-            big_X = data["X"]
-            big_y = data["y"]
-        elif (
-            isinstance(Path(self.name), Path)
+            _ = np.load(self.name)
+            big_X  = _['X']
+            big_y = _['y']
+        elif(isinstance(Path(self.name), Path)
             and Path(self.name).exists()
             and str(self.name).endswith(".csv")
         ):
-            assert "target" in self.params, "target column must be specified"
+            assert self.target is not None,  "target column must be specified if csv file is used"
             df = pd.read_csv(self.name)
             big_X = df.drop(self.target, axis=1)
             big_y = df[self.target]
@@ -64,7 +61,7 @@ class Data(
             and Path(self.name).exists()
             and str(self.name).endswith(".json")
         ):
-            assert "target" in self.params, "target column must be specified"
+            assert "target" in self.params, "target column must be specified if json file is used"
             df = pd.read_json(self.name)
             big_X = df.drop(self.target, axis=1)
             big_y = df[self.target]
@@ -74,30 +71,36 @@ class Data(
             stratify = big_y
         else:
             stratify = None
-        X_train, X_test, y_train, y_test = train_test_split(
-            big_X,
-            big_y,
-            shuffle=self.shuffle,
-            random_state=self.random_state,
-            train_size=self.train_size,
-            stratify=stratify,
-        )
-        return {
-            "X_train": X_train,
-            "X_test": X_test,
-            "y_train": y_train,
-            "y_test": y_test,
-        }
-
+        if self.test_size == 0:
+            X_train, X_test, y_train, y_test = train_test_split(
+                big_X,
+                big_y,
+                shuffle=self.shuffle,
+                random_state=self.random_state,
+                train_size=self.train_size,
+                stratify=stratify,
+            )
+            return {
+                "X_train": X_train,
+                "X_test": X_test,
+                "y_train": y_train,
+                "y_test": y_test,
+            }
+        else:
+            return {
+                "X_train": big_X[: self.train_size],
+                "y_train": big_y[: self.train_size],
+            }
 
 yaml.add_constructor("!Data", Data)
 if __name__ == "__main__":
     document = """
     !Data
-    name: data/features/data.npz
+    name: data/features/train_data.npz
     shuffle : True
     random_state : 42
     train_size : 2500
+    test_size : 0
     stratify : True
     """
     data = yaml.load(document, Loader=yaml.Loader)

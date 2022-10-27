@@ -20,6 +20,7 @@ stages:
     - ${result.path}/${plots.rank}
     - ${result.path}/${plots.confusion}
     - ${result.path}/${plots.classification}
+    - ${result.path}/${plots.pca}
     # - ${result_paths}/{plots.information}
     # - ${result_paths}/{plots.dropping}
     # - ${result_paths}/{plots.learning}

@@ -138,7 +138,7 @@ if __name__ == "__main__":
     dirs = create_directories(paths)
     with zipfile.ZipFile(input_data, "r") as zip_ref:
         zip_ref.extractall(raw_path)
-    print("Extracting acc data")
+    print(f"Extracting {key} data")
     extract_feat_data_from_raw(raw_path, acc_path)
     print("Extracting time windows")
     extract_time_windows(

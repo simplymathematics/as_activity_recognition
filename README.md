@@ -7,6 +7,7 @@ Folders and filenames are specified in `params.yaml`. Model input parameters are
 The basic experiment pipeline 
 ```mermaid
 flowchart TD
+	subgraph pipeline.yaml
 	raw["raw_data"]
 	feat["feature extraction"]
 	pre["preprocessor"]
@@ -28,6 +29,7 @@ flowchart TD
 	feat-->pre
 	subgraph classify.py
 	pre-->sel-->model-->reports
+	end
 	end
 ```
 DVC docs are [here](dvc.org).

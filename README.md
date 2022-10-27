@@ -34,6 +34,6 @@ flowchart TD
 	end
 	end
 ```
-DVC docs are [here](dvc.org).
+DVC docs are [here](https://dvc.org).
 
 ```bash driver.sh``` pull in the data, display the pipeline, run an experiment, render the results, and start a server on port `8000`.

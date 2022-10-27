@@ -155,7 +155,7 @@ if __name__ == "__main__":
     visualizer.score(X_test, y_test)
     visualizer.show(outpath=str(parent / config["plots"]["classification"]))
     # PCA Visualization
-    visualizer = PCA(scale = True, classes = list(ENCODING.keys()))
+    visualizer = PCA(scale=True, classes=list(ENCODING.keys()))
     visualizer.fit_transform(X_train, y_train)
     visualizer.show(parent / config["plots"]["pca"])
     # Rank1D, Rank2D <- Make this one last or debug matplotlib. Your choice.

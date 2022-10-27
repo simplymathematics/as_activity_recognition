@@ -1,0 +1,66 @@
+\documentclass[10pt]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathrsfs}
+\usepackage{mathtools}
+\usepackage{hyperref}
+
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{scalefnt}
+\usepackage{algorithmic}
+\usepackage{tikz}
+\usepackage{caption}
+\usepackage{subcaption}
+\newcommand{\inner}[2]{\langle{#1},{#2}\rangle}
+\usepackage{multicol}
+\setlength{\columnseprule}{0.4pt}
+\DeclareMathOperator*{\aff}{aff}
+\DeclareMathOperator*{\conv}{conv}
+\DeclareMathOperator*{\cone}{cone}
+\theoremstyle{definition}
+\usepackage{bbm}
+\usepackage{lmodern} %for institute name
+
+\setcounter{MaxMatrixCols}{20}
+\newtheorem{thm}{Theorem}
+\newtheorem{prop}{Proposition}
+\newtheorem{rem}{Remark}
+\newtheorem{defn}{Definition}
+\newtheorem{lem}{Lemma}
+
+\everymath{\displaystyle}
+\title{Sensor Fusion}
+\author{Zoom Group 1}
+
+% \institute{KTH Royal Institute of Technology}
+\date{\today}
+
+\usetheme{Copenhagen}
+\usecolortheme{rose}
+
+\let\olditem\item
+\renewcommand{\item}{\setlength{\itemsep}{\fill}\olditem}
+
+\begin{document}
+\frame{\titlepage}
+
+% Add all plots in the results file.
+
+\begin{frame}{Inducing Zero-G measurements in MEMS accelerometers}
+\begin{figure}
+    \includegraphics[width=\textwidth]{figure.png}
+    \caption{Acceleration vs. Time When dropped from the 2nd floor.}
+    \label{fig:my_label}
+\end{figure}
+\end{frame}
+
+% \begin{frame}
+% \frametitle{References}
+
+% \setbeamertemplate{bibliography item}[text]
+
+% \bibliographystyle{acm}
+% \bibliography{mobility.bib}
+% \end{frame}
+\end{document}

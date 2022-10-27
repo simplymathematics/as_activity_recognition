@@ -31,7 +31,6 @@ sample: # Samples the Data
   train_size : 2500
   stratify : True
 result: # result path
-  model_file: model.yaml
   path: results
   scores: scores.json
 plots: #plots
@@ -39,6 +38,7 @@ plots: #plots
   rank: rank.png
   confusion: confusion.png
   classification: classification.png
+  pca : pca.png
   # dropping : dropping.png
   # learning : learning.png
   # cross_validation : cross_validation.png

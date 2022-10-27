@@ -17,13 +17,13 @@ def create_directories(dirs: list):
     return directories
 
 
-def extract_feat_data_from_raw(path_raw: Path, path_out: Path):
+def extract_feat_data_from_raw(path_raw: Path, path_out: Path, key = 'acc'):
     for path_f in path_raw.iterdir():
         path_feat = path_out / path_f.name
         with path_f.open() as fp:
             acc_data = ""
             for line in fp.readlines():
-                if line.split("\t")[1] == "ACC":
+                if line.split("\t")[1] == key.toupper():
                     acc_data += line
             if acc_data:
                 with path_feat.open("w") as fp:
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     with zipfile.ZipFile(input_data, "r") as zip_ref:
         zip_ref.extractall(raw_path)
     print(f"Extracting {key} data")
-    extract_feat_data_from_raw(raw_path, acc_path)
+    extract_feat_data_from_raw(raw_path, acc_path, key = key)
     print("Extracting time windows")
     extract_time_windows(
         file_nrs=(1, 2, 3, 4, 5),

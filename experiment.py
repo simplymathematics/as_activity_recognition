@@ -1,27 +1,31 @@
 from data import Data
 from model import Model
 import yaml
+from numpy import load
 
-
-def load_experiment(filename="params.yaml", data_key="sample", model_key="pipeline"):
+def load_experiment(filename="params.yaml", input_data_key="sample", model_key="model", test_data = None):
     with open(filename, "r") as f:
-        document = yaml.load(f, Loader=yaml.Loader)
-    document = str(document[data_key])
+        full = yaml.load(f, Loader=yaml.Loader)
+    document = str(full[input_data_key])
     document = str(document)
-    data = yaml.load("!Data\n" + document, Loader=yaml.Loader)
-    assert isinstance(data, Data)
-    data = data()
+    input_data = yaml.load("!Data\n" + document, Loader=yaml.Loader)
+    assert isinstance(input_data, Data)
+    input_data = input_data()
+    if test_data is not None or "X_test" not in input_data:
+        assert test_data is not None, "test_data must be specified if X_test is not in input_data"
+        test_data = load(test_data)
     with open(filename, "r") as f:
         full = yaml.load(f, Loader=yaml.Loader)
     pipe = full["pipeline"]
     document = {}
     for entry in pipe:
-        document[entry] = full[entry]
+        if entry is not model_key:
+            document[entry] = full[entry]
     document = str(document)
     config = yaml.load("!Model\n" + document, Loader=yaml.Loader)
     assert isinstance(config, Model)
-    model = config.load()
-    return data, model
+    loaded_model = config.load()
+    return input_data, loaded_model
 
 
 if __name__ == "__main__":

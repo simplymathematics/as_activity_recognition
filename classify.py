@@ -89,11 +89,17 @@ if __name__ == "__main__":
 
     config = dvc.api.params_show()
     data, model = load_experiment()
-    y_train = data["y_train"]
-    y_test = data["y_test"]
-    X_test = data["X_test"]
-    X_train = data["X_train"]
-
+    if "X_test" in data:
+        X_test = data["X_test"]
+        X_train = data["X_train"]
+        y_test = data["y_test"]
+        y_train = data["y_train"]
+    else:
+        X_train = data["X_train"]
+        y_train = data["y_train"]
+        test_data = np.load(config['result']['test'])
+        X_test = test_data["X"]
+        y_test = test_data["y"]
     ####################################
     #             Science              #
     ####################################

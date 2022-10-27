@@ -7,8 +7,8 @@ from sklearn.pipeline import Pipeline
 class Model(
     collections.namedtuple(
         "Model",
-        ("model", "pipeline", "preprocessor", "feature_selector"),
-        defaults=(None, None, None),
+        ("model", "pipeline", "preprocessor", "feature_selector", "search", "grid"),
+        defaults=(None, None, None, None, None),
     ),
 ):
     def __new__(cls, loader, node):
@@ -74,6 +74,12 @@ class Model(
                 i += 0
             pipe_list.append(("model", model))
             model = Pipeline(pipe_list)
+        if self.search is not None:
+            assert self.param_grid is not None, "if search is specified, param_grid must be specified."
+            self.search.update({"param_grid": self.grid})
+
+            model = self.gen_from_tup((self.search.pop("name"), self.search))
+            
         return model
 
 
@@ -94,6 +100,9 @@ if __name__ == "__main__":
     feature_selector:
         name : sklearn.feature_selection.SelectKBest
         k: 30
+    search:
+        name : sklearn.model_selection.StratifiedKFold
+        n_splits : 5
     """
     document = "!Model\n" + document
     print(document)

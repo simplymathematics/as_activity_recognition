@@ -1,27 +1,38 @@
 from experiment import load_experiment
 import importlib
-from hashlib import md5
 from pathlib import Path
 
 import dvc.api
 import matplotlib.pyplot as plt
 import numpy as np
-import ruamel.yaml as yaml
 from pandas import DataFrame
-from sklearn.metrics import (accuracy_score, explained_variance_score,
-                             f1_score, mean_absolute_error,
-                             mean_absolute_percentage_error,
-                             mean_squared_error, precision_score, r2_score,
-                             recall_score, roc_auc_score)
-from sklearn.model_selection import StratifiedKFold
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-from yellowbrick.classifier import (ROCAUC, ClassificationReport,
-                                    ClassPredictionError, ConfusionMatrix,
-                                    DiscriminationThreshold,
-                                    PrecisionRecallCurve)
+from sklearn.metrics import (
+    accuracy_score,
+    explained_variance_score,
+    f1_score,
+    mean_absolute_error,
+    mean_absolute_percentage_error,
+    mean_squared_error,
+    precision_score,
+    r2_score,
+    recall_score,
+    roc_auc_score,
+)
+from sklearn.preprocessing import LabelEncoder
+from yellowbrick.classifier import (
+    ROCAUC,
+    ClassificationReport,
+    ClassPredictionError,
+    ConfusionMatrix,
+    PrecisionRecallCurve,
+)
 from yellowbrick.features import rank1d, rank2d
-from yellowbrick.model_selection import (CVScores, DroppingCurve,
-                                         FeatureImportances, LearningCurve)
+from yellowbrick.model_selection import (
+    CVScores,
+    DroppingCurve,
+    FeatureImportances,
+    LearningCurve,
+)
 from yellowbrick.target import ClassBalance, FeatureCorrelation
 
 from pre_process import ENCODING
@@ -42,6 +53,7 @@ CLASSIFIER_SCORERS = {
     "AUC": roc_auc_score,
 }
 
+
 def gen_from_tuple(obj_tuple: list, *args) -> list:
     """
     Imports and initializes objects from yml file. Returns a list of instantiated objects.
@@ -59,7 +71,10 @@ def gen_from_tuple(obj_tuple: list, *args) -> list:
     if len(args) > 0:
         global positional_arg
         positional_arg = args[0]
-        exec(f"temp_object = tmp_library.{class_name}(positional_arg, **{params})", globals())
+        exec(
+            f"temp_object = tmp_library.{class_name}(positional_arg, **{params})",
+            globals(),
+        )
         del positional_arg
     elif len(args) == 0:
         exec(f"temp_object = tmp_library.{class_name}(**params)", globals())
@@ -71,14 +86,14 @@ def gen_from_tuple(obj_tuple: list, *args) -> list:
 
 
 if __name__ == "__main__":
-    
+
     config = dvc.api.params_show()
     data, model = load_experiment()
-    y_train = data['y_train']
-    y_test = data['y_test']
-    X_test = data['X_test']
-    X_train = data['X_train']
-    
+    y_train = data["y_train"]
+    y_test = data["y_test"]
+    X_test = data["X_test"]
+    X_train = data["X_train"]
+
     ####################################
     #             Science              #
     ####################################
@@ -86,24 +101,26 @@ if __name__ == "__main__":
     score_dict = {}
     for key, value in CLASSIFIER_SCORERS.items():
         try:
-            score_dict.update({key :value(y_test, model.predict(X_test))})
+            score_dict.update({key: value(y_test, model.predict(X_test))})
         except ValueError as e:
             if "average=" in str(e):
-                score_dict.update({key : value(y_test, model.predict(X_test), average='weighted')})
-    
+                score_dict.update(
+                    {key: value(y_test, model.predict(X_test), average="weighted")},
+                )
+
     ####################################
     #             Saving               #
     ####################################
-    result_path = Path(config['result']['path'], config['result']['scores'])
+    result_path = Path(config["result"]["path"], config["result"]["scores"])
     df = DataFrame()
-    df['score'] = score_dict.values()
-    df['scorer'] = score_dict.keys()
-    df.to_json(result_path, orient='index')
+    df["score"] = score_dict.values()
+    df["scorer"] = score_dict.keys()
+    df.to_json(result_path, orient="index")
     ####################################
     #           Visualising            #
     ####################################
     # Balance
-    
+
     # X_train = OneHotEncoder().fit_transform(X_train)
     y_train = LabelEncoder().fit_transform(y_train)
     # X_test = OneHotEncoder().fit_transform(X_test)
@@ -113,36 +130,40 @@ if __name__ == "__main__":
     # For Visualizing the Feature Selection
     mod_viz = (DroppingCurve, CVScores, LearningCurve, FeatureImportances)
     # For Visualizing the Model
-    cls_viz = (ConfusionMatrix, ROCAUC, PrecisionRecallCurve, ClassPredictionError, ClassificationReport, ClassPredictionError)
+    cls_viz = (
+        ConfusionMatrix,
+        ROCAUC,
+        PrecisionRecallCurve,
+        ClassPredictionError,
+        ClassificationReport,
+        ClassPredictionError,
+    )
     features = np.array(range(X_train.shape[1]))
     parent = Path(result_path).parent
     # Balance
     visualizer = ClassBalance(labels=list(ENCODING.keys()))
     visualizer.fit(y_train)
-    visualizer.show(outpath = str(parent / config['plots']['balance']))  
+    visualizer.show(outpath=str(parent / config["plots"]["balance"]))
     # Confusion Matrix
     visualizer = ConfusionMatrix(model, classes=list(ENCODING.keys()))
     visualizer.fit(X_train, y_train)
     visualizer.score(X_test, y_test)
-    visualizer.show(outpath = str(parent / config['plots']['confusion']))
+    visualizer.show(outpath=str(parent / config["plots"]["confusion"]))
     # Classification Report
     visualizer = ClassificationReport(model, classes=list(ENCODING.keys()))
     visualizer.fit(X_train, y_train)
     visualizer.score(X_test, y_test)
-    visualizer.show(outpath = str(parent / config['plots']['classification']))
+    visualizer.show(outpath=str(parent / config["plots"]["classification"]))
     # Rank1D, Rank2D <- Make this one last or debug matplotlib. Your choice.
-    fig, axes = plt.subplots(ncols=2, figsize=(8,4))
+    fig, axes = plt.subplots(ncols=2, figsize=(8, 4))
     rank1d(X_train, ax=axes[0])
     rank2d(X_train, ax=axes[1])
-    fig.savefig(str(parent / config['plots']['rank']))
+    fig.savefig(str(parent / config["plots"]["rank"]))
     # Rank2D
-    
-    
-    
-    
+
     # # Fischer
     # visualizer = FeatureCorrelation(labels=features, method='mutual_info-classification', sort=True)
-    # visualizer.fit(X_train, y_train)       
+    # visualizer.fit(X_train, y_train)
     # visualizer.show(outpath = str(parent / config['plots']['information']))
     # # Feature Selection
     # visualizer = DroppingCurve(clf, scoring='f1_weighted')
@@ -167,7 +188,3 @@ if __name__ == "__main__":
     # visualizer.fit(X_train, y_train)
     # visualizer.score(X_test, y_test)
     # visualizer.show(outpath = str(parent / config['plots']['rocauc']))
-    
-    
-
-    

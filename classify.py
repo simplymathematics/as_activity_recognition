@@ -157,7 +157,7 @@ if __name__ == "__main__":
     # PCA Visualization
     visualizer = PCA(scale=True, classes=list(ENCODING.keys()))
     visualizer.fit_transform(X_train, y_train)
-    visualizer.show(parent / config["plots"]["classification"])
+    visualizer.show(parent / config["plots"]["pca"])
     # Rank1D, Rank2D <- Make this one last or debug matplotlib. Your choice.
     fig, axes = plt.subplots(ncols=2, figsize=(8, 4))
     rank1d(X_train, ax=axes[0])

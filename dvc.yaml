@@ -15,6 +15,7 @@ stages:
     deps:
     - ${preprocessing.root}
     - classify.py
+    - params.yaml
     plots:
     - ${result.path}/${plots.balance}
     - ${result.path}/${plots.rank}
@@ -32,5 +33,6 @@ stages:
     - model
     - preprocessor
     - feature_selector
+    - grid
     metrics:
     - ${result.path}/${result.scores}

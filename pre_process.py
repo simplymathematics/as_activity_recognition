@@ -153,7 +153,7 @@ if __name__ == "__main__":
     extract_feat_data_from_raw(raw_path, sensor_path, key = key)
     print("Extracting time windows")
     train_file = config["preprocessing"]["train_key"] + str("_" + data_file)
-    test_file = config["preprocessing"]["test_key"]+ str("_" + data_file)
+    test_file = config["preprocessing"]["test_key"] + str("_" + data_file)
     print("Creating training data")
     train_data = extract_time_windows(
         file_nrs=(1, 2, 3, 4),

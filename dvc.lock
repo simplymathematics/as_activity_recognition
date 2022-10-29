@@ -7,33 +7,55 @@ stages:
       md5: 05061832277bcebe4cde53dfd13fbde6
       size: 2843808
     - path: pre_process.py
-      md5: 645fd45c2309a4740e774c0a5e7f65b3
-      size: 6165
+      md5: 2792334a983b361240cf1cd22fc8fefb
+      size: 6166
     params:
       params.yaml:
-        preprocessing.key: mag
+        preprocessing.key: ori
         preprocessing.stride: 2
         preprocessing.window: 10
     outs:
     - path: data
-      md5: a5c8a7baac935771dc4eccc7053b3101.dir
-      size: 23083037
+      md5: dcee01df873d83cf0a3a981a583e6dd9.dir
+      size: 23459189
       nfiles: 34
   classify:
     cmd: python3 classify.py
     deps:
     - path: classify.py
-      md5: 7163553cce9099dd526b3749846ff006
-      size: 7091
+      md5: 6317a96a55d7b83a83ff701821d40958
+      size: 7094
     - path: data
-      md5: a5c8a7baac935771dc4eccc7053b3101.dir
-      size: 23083037
+      md5: dcee01df873d83cf0a3a981a583e6dd9.dir
+      size: 23459189
       nfiles: 34
+    - path: params.yaml
+      md5: a2d94d8232b7450417062a740a7afabf
+      size: 1481
     params:
       params.yaml:
         feature_selector:
           name: sklearn.feature_selection.SelectKBest
           k: 100
+        grid:
+          n_estimators:
+          - 10
+          - 20
+          - 30
+          - 50
+          - 100
+          k:
+          - 10
+          - 20
+          - 30
+          - 50
+          - 100
+          max_depth:
+          - 10
+          - 20
+          - 30
+          - 50
+          - 100
         model:
           name: sklearn.ensemble.RandomForestClassifier
           n_estimators: 100
@@ -52,24 +74,24 @@ stages:
       size: 17496
       isexec: true
     - path: results/classification.png
-      md5: df2c12e45701b78aef32924183c83b0c
-      size: 34627
+      md5: 1e7a5d261ce5ac930dd411d41b2583bd
+      size: 35728
       isexec: true
     - path: results/confusion.png
-      md5: 5829f7167aaf09cbaf6804206665e33c
-      size: 27713
+      md5: d8db930f1da57c54277533be7c2c9c73
+      size: 27334
       isexec: true
     - path: results/pca.png
-      md5: 26950e257bf5e5dcf2a44d83390c835b
-      size: 32792
+      md5: 4479664c3233f9ebec8273c304fa3b65
+      size: 29842
       isexec: true
     - path: results/rank.png
-      md5: 40f7c0e6aba258084b7ef571d658ae56
-      size: 112880
+      md5: 43e434f48c29b49a846af197aee6ef0d
+      size: 94897
       isexec: true
     - path: results/scores.json
-      md5: 09969f18ff52a5324a34b3348c9c859d
-      size: 169
+      md5: 1215bc8826b7a5752962fadf8447b6cb
+      size: 77
       isexec: true
   print:
     cmd: cat params.yaml

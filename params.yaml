@@ -3,10 +3,12 @@ preprocessing:
   raw: raw
   acc: raw_acc
   mag: raw_mag
+  gyr: raw_gyr
+  ori: raw_ori
   time: time_windows
   feat: features
   zip: Activity_Recognition_Logs.zip
-  key: mag
+  key: ori
   window : 10
   stride : 2
   data_file : data.npz
@@ -42,8 +44,9 @@ search:
   name : sklearn.model_selection.GridSearchCV
   refit : True
 grid:
-  n_estimators : [10, 20, 30]
-  k : [10, 20, 30]
+  n_estimators : [10, 20, 30, 50, 100]
+  k : [10, 20, 30, 50, 100]
+  max_depth : [10, 20, 30, 50, 100]
 plots: #plots
   balance: balance.png
   rank: rank.png

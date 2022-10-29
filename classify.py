@@ -5,7 +5,7 @@ from pathlib import Path
 import dvc.api
 import matplotlib.pyplot as plt
 import numpy as np
-from pandas import DataFrame
+from pandas import Series
 from sklearn.metrics import (
     accuracy_score,
     explained_variance_score,
@@ -118,10 +118,10 @@ if __name__ == "__main__":
     #             Saving               #
     ####################################
     result_path = Path(config["result"]["path"], config["result"]["scores"])
-    df = DataFrame()
-    df["score"] = score_dict.values()
-    df["scorer"] = score_dict.keys()
-    df.to_json(result_path, orient="index")
+    df = Series(score_dict)
+    # df["score"] = score_dict.values()
+    # df["scorer"] = score_dict.keys()
+    df.to_json(result_path)
     ####################################
     #           Visualising            #
     ####################################

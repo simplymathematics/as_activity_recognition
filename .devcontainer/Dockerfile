@@ -22,4 +22,4 @@ RUN if [ "${NODE_VERSION}" != "none" ]; then su vscode -c "umask 0002 && . /usr/
 
 RUN python -m pip install -r requirements.txt
 RUN dvc repro --force
-RUN cd results && python -m http.server 8000
+# RUN cd results && python -m http.server 8000

@@ -38,9 +38,12 @@ result: # result path
   path: results
   test: data/features/test_data.npz
   scores: scores.json
+search:
+  name : sklearn.model_selection.GridSearchCV
+  refit : True
 grid:
-  k: [10,20,30, 50, 100]
-  with_mean: [True, False]
+  n_estimators : [10, 20, 30]
+  k : [10, 20, 30]
 plots: #plots
   balance: balance.png
   rank: rank.png

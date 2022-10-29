@@ -48,20 +48,29 @@ stages:
           with_mean: true
     outs:
     - path: results/balance.png
-      md5: 97af4efe00e0de00e3a4aa0b8dac6aaa
-      size: 17950
+      md5: c8d8410b964875688b427d642b7497b2
+      size: 17496
+      isexec: true
     - path: results/classification.png
-      md5: 6d7fcb4dbd2393eaad4dd8f66779ab05
-      size: 38013
+      md5: df2c12e45701b78aef32924183c83b0c
+      size: 34627
+      isexec: true
     - path: results/confusion.png
-      md5: 3fb2203214917e7e9a78c8840cb2dd1b
-      size: 28038
+      md5: 5829f7167aaf09cbaf6804206665e33c
+      size: 27713
+      isexec: true
+    - path: results/pca.png
+      md5: 26950e257bf5e5dcf2a44d83390c835b
+      size: 32792
+      isexec: true
     - path: results/rank.png
-      md5: 1655d4e0c009e642729d04bf7ac9ddce
-      size: 114044
+      md5: 40f7c0e6aba258084b7ef571d658ae56
+      size: 112880
+      isexec: true
     - path: results/scores.json
-      md5: 575033f19599c18681ebe4694fefff47
+      md5: 09969f18ff52a5324a34b3348c9c859d
       size: 169
+      isexec: true
   print:
     cmd: cat params.yaml
   print-params:

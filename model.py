@@ -67,7 +67,6 @@ class Model(
                 print(f"name is: {name}")
                 component = getattr(self, name)
                 print(component)
-                input("Inside pipeline loop")
                 type_ = component.pop("name")
                 obj_ = self.gen_from_tup((type_, component))
                 pipe_list.append((name, obj_))
@@ -75,11 +74,18 @@ class Model(
             pipe_list.append(("model", model))
             model = Pipeline(pipe_list)
         if self.search is not None:
-            assert self.param_grid is not None, "if search is specified, param_grid must be specified."
-            self.search.update({"param_grid": self.grid})
-
-            model = self.gen_from_tup((self.search.pop("name"), self.search))
-            
+            print(self.search)
+            print(type(self.search))
+            dict_ = dict(self.search)
+            name = str(dict_.pop('name'))
+            if "grid" in name.lower():
+                assert self.grid is not None, "if grid search is specified, param_grid must be specified."
+                self.search.update({"param_grid": self.grid})
+                self.search.update({"estimator": model})
+                _ = self.search.pop("name")
+                model = self.gen_from_tup((name, self.search))
+            else:
+                model = self.gen_from_tup((name, self.search))
         return model
 
 
@@ -101,12 +107,13 @@ if __name__ == "__main__":
         name : sklearn.feature_selection.SelectKBest
         k: 30
     search:
-        name : sklearn.model_selection.StratifiedKFold
-        n_splits : 5
+        name : sklearn.model_selection.GridSearchCV
+        refit : True
+    grid:
+        n_estimators : [10, 20, 30]
+        k : [10, 20, 30]
     """
     document = "!Model\n" + document
-    print(document)
-    input("Press Enter to continue...")
     config = yaml.unsafe_load(document)
     model = config.load()
     assert hasattr(model, "fit"), "Model must have a fit method"

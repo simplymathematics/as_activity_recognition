@@ -27,7 +27,16 @@ real = {
 }
 
 
-class Data(collections.namedtuple("Data", "name, shuffle, random_state, train_size, stratify, test_size", defaults = (None, None,))):
+class Data(
+    collections.namedtuple(
+        "Data",
+        "name, shuffle, random_state, train_size, stratify, test_size",
+        defaults=(
+            None,
+            None,
+        ),
+    ),
+):
     def __new__(cls, loader, node):
         return super().__new__(cls, **loader.construct_mapping(node))
 
@@ -46,13 +55,16 @@ class Data(collections.namedtuple("Data", "name, shuffle, random_state, train_si
             and str(self.name).endswith(".npz")
         ):
             _ = np.load(self.name)
-            big_X  = _['X']
-            big_y = _['y']
-        elif(isinstance(Path(self.name), Path)
+            big_X = _["X"]
+            big_y = _["y"]
+        elif (
+            isinstance(Path(self.name), Path)
             and Path(self.name).exists()
             and str(self.name).endswith(".csv")
         ):
-            assert self.target is not None,  "target column must be specified if csv file is used"
+            assert (
+                self.target is not None
+            ), "target column must be specified if csv file is used"
             df = pd.read_csv(self.name)
             big_X = df.drop(self.target, axis=1)
             big_y = df[self.target]
@@ -61,7 +73,9 @@ class Data(collections.namedtuple("Data", "name, shuffle, random_state, train_si
             and Path(self.name).exists()
             and str(self.name).endswith(".json")
         ):
-            assert "target" in self.params, "target column must be specified if json file is used"
+            assert (
+                "target" in self.params
+            ), "target column must be specified if json file is used"
             df = pd.read_json(self.name)
             big_X = df.drop(self.target, axis=1)
             big_y = df[self.target]
@@ -91,6 +105,7 @@ class Data(collections.namedtuple("Data", "name, shuffle, random_state, train_si
                 "X_train": big_X[: self.train_size],
                 "y_train": big_y[: self.train_size],
             }
+
 
 yaml.add_constructor("!Data", Data)
 if __name__ == "__main__":

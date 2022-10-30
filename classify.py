@@ -5,7 +5,9 @@ from pathlib import Path
 import dvc.api
 import matplotlib.pyplot as plt
 import numpy as np
-from pandas import DataFrame
+from pandas import Series, DataFrame
+from sklearn.model_selection import StratifiedKFold
+from sklearn.pipeline import Pipeline
 from sklearn.metrics import (
     accuracy_score,
     explained_variance_score,
@@ -26,7 +28,7 @@ from yellowbrick.classifier import (
     ConfusionMatrix,
     PrecisionRecallCurve,
 )
-from yellowbrick.features import rank1d, rank2d, PCA
+from yellowbrick.features import PCA
 from yellowbrick.model_selection import (
     CVScores,
     DroppingCurve,
@@ -86,8 +88,9 @@ def gen_from_tuple(obj_tuple: list, *args) -> list:
 
 
 if __name__ == "__main__":
-
+    print("Loading config")
     config = dvc.api.params_show()
+    print("Loading data, model, and pipeline...")
     data, model = load_experiment()
     if "X_test" in data:
         X_test = data["X_test"]
@@ -97,15 +100,17 @@ if __name__ == "__main__":
     else:
         X_train = data["X_train"]
         y_train = data["y_train"]
-        test_data = np.load(config['result']['test'])
+        test_data = np.load(config["result"]["test"])
         X_test = test_data["X"]
         y_test = test_data["y"]
     ####################################
     #             Science              #
     ####################################
+    print("Running science...")
     model.fit(X_train, y_train)
     score_dict = {}
     for key, value in CLASSIFIER_SCORERS.items():
+        print(f"Calculating {key} score...")
         try:
             score_dict.update({key: value(y_test, model.predict(X_test))})
         except ValueError as e:
@@ -113,15 +118,27 @@ if __name__ == "__main__":
                 score_dict.update(
                     {key: value(y_test, model.predict(X_test), average="weighted")},
                 )
-
+    if hasattr(model, "best_estimator_"):
+        if hasattr(model, "cv_results_"):
+            cv_df = DataFrame(model.cv_results_)
+            print(cv_df.head())
+            print(f"Saving cross validation results to {config['result']['path']}...")
+            cv_path = Path(config["result"]["path"], config["result"]["cv"])
+            cv_df.to_csv(cv_path)
+        else:
+            input("Press enter to continue...")
+            print("No cross validation results to save")
+            print(f"Model is a {type(model)}")
+        model = model.best_estimator_
     ####################################
     #             Saving               #
     ####################################
+    print(f"Saving results to {config['result']['path']}...")
     result_path = Path(config["result"]["path"], config["result"]["scores"])
-    df = DataFrame()
-    df["score"] = score_dict.values()
-    df["scorer"] = score_dict.keys()
-    df.to_json(result_path, orient="index")
+    result_path.parent.mkdir(parents=True, exist_ok=True)
+    df = Series(score_dict)
+    df.to_json(result_path)
+
     ####################################
     #           Visualising            #
     ####################################
@@ -144,57 +161,106 @@ if __name__ == "__main__":
         ClassificationReport,
         ClassPredictionError,
     )
-    features = np.array(range(X_train.shape[1]))
-    parent = Path(result_path).parent
-    # Balance
-    visualizer = ClassBalance(labels=list(ENCODING.keys()))
-    visualizer.fit(y_train)
-    visualizer.show(outpath=str(parent / config["plots"]["balance"]))
+    plot_path = result_path.parent
+
     # Confusion Matrix
+    print("Visualizing Confusion Matrix")
     visualizer = ConfusionMatrix(model, classes=list(ENCODING.keys()))
     visualizer.fit(X_train, y_train)
     visualizer.score(X_test, y_test)
-    visualizer.show(outpath=str(parent / config["plots"]["confusion"]))
+    visualizer.show(outpath=str(plot_path / config["plots"]["confusion"]))
+    plt.gcf().clear()
+    del visualizer
     # Classification Report
+    print("Visualizing Classification Report")
     visualizer = ClassificationReport(model, classes=list(ENCODING.keys()))
     visualizer.fit(X_train, y_train)
     visualizer.score(X_test, y_test)
-    visualizer.show(outpath=str(parent / config["plots"]["classification"]))
+    visualizer.show(outpath=str(plot_path / config["plots"]["classification"]))
+    plt.gcf().clear()
+
+    del visualizer
+
+    cv = StratifiedKFold(n_splits=10)
+
+    if isinstance(model, Pipeline):
+        print("Splitting Pipeline")
+        full = Pipeline(model.steps[:])
+        big_X = X_train
+        big_y = y_train
+        transformers = Pipeline(model.steps[:-1])
+        X_train = transformers.transform(X_train)
+        X_test = transformers.transform(X_test)
+        features = np.array(range(X_train.shape[1]))
+        model = model.steps[-1][1]
+    # else:
+    #     features = np.array(range(X_train.shape[1]))
+
     # PCA Visualization
+    print("Visualizing PCA")
     visualizer = PCA(scale=True, classes=list(ENCODING.keys()))
     visualizer.fit_transform(X_train, y_train)
-    visualizer.show(parent / config["plots"]["pca"])
-    # Rank1D, Rank2D <- Make this one last or debug matplotlib. Your choice.
-    fig, axes = plt.subplots(ncols=2, figsize=(8, 4))
-    rank1d(X_train, ax=axes[0])
-    rank2d(X_train, ax=axes[1])
-    fig.savefig(str(parent / config["plots"]["rank"]))
-    # Rank2D
-
-    # # Fischer
-    # visualizer = FeatureCorrelation(labels=features, method='mutual_info-classification', sort=True)
+    visualizer.show(plot_path / config["plots"]["pca"])
+    plt.gcf().clear()
+    del visualizer
+    # Fischer
+    # visualizer = FeatureCorrelation(labels=False, method='mutual_info-classification', sort=True)
     # visualizer.fit(X_train, y_train)
-    # visualizer.show(outpath = str(parent / config['plots']['information']))
-    # # Feature Selection
-    # visualizer = DroppingCurve(clf, scoring='f1_weighted')
+    # visualizer.show(outpath = str(plot_path / config['plots']['information']))
+    # plt.gcf().clear()
+    # del visualizer
+    # Feature Selection
+    print("Visualizing Feature Selection")
+    visualizer = DroppingCurve(model, scoring="f1_weighted", cv=cv)
+    visualizer.fit(X_train, y_train)
+    visualizer.show(outpath=str(plot_path / config["plots"]["dropping"]))
+    plt.gcf().clear()
+    del visualizer
+    # Learning Curve
+    print("Visualizing Learning Curve")
+    sizes = [0.01, 0.1, 0.25, 0.5, 0.75, 1.0]
+    visualizer = LearningCurve(
+        model,
+        cv=cv,
+        scoring="f1_weighted",
+        train_sizes=sizes,
+        n_jobs=4,
+    )
+    visualizer.fit(X_train, y_train)
+    visualizer.show(outpath=str(plot_path / config["plots"]["learning"]))
+    plt.gcf().clear()
+    del visualizer
+    # Cross Validation
+    print("Visualizing Cross Validation")
+    visualizer = CVScores(model, cv=cv, scoring="f1_weighted")
+    visualizer.fit(X_train, y_train)
+    visualizer.show(outpath=str(plot_path / config["plots"]["cross_validation"]))
+    plt.gcf().clear()
+    del visualizer
+    # Feature Importance
+    # print("Visualizing Feature Importance")
+    # visualizer = FeatureImportances(model, labels=features)
     # visualizer.fit(X_train, y_train)
-    # visualizer.show(outpath = str(parent / config['plots']['dropping']))
-    # # Learning Curve
-    # cv = StratifiedKFold(n_splits=12)
-    # sizes = [0.01, 0.1, 0.25, 0.5, 0.75, 1.0]
-    # visualizer = LearningCurve(clf, cv=cv, scoring='f1_weighted', train_sizes=sizes, n_jobs=4)
-    # visualizer.fit(X_train, y_train)
-    # visualizer.show(outpath = str(parent / config['plots']['learning']))
-    # # Cross Validation
-    # visualizer = CVScores(clf, cv=cv, scoring='f1_weighted')
-    # visualizer.fit(X_train, y_train)
-    # visualizer.show(outpath = str(parent / config['plots']['cross_validation']))
-    # # Feature Importance
-    # visualizer = FeatureImportances(clf)
-    # visualizer.fit(X_train, y_train)
-    # visualizer.show(outpath = str(parent / config['plots']['feature_importance']))
+    # visualizer.show(outpath = str(plot_path / config['plots']['feature_importance']))
     # # ROCAUC
-    # visualizer = ROCAUC(clf, classes=list(ENCODING.items())[:])
-    # visualizer.fit(X_train, y_train)
-    # visualizer.score(X_test, y_test)
-    # visualizer.show(outpath = str(parent / config['plots']['rocauc']))
+    print("Visualizing ROCAUC")
+    visualizer = ROCAUC(model, classes=list(ENCODING.items())[:])
+    visualizer.fit(X_train, y_train)
+    visualizer.score(X_test, y_test)
+    visualizer.show(outpath=str(plot_path / config["plots"]["roc_auc"]))
+    plt.gcf().clear()
+    del visualizer
+    # Balance
+    print("Visualizing Class Balance")
+    visualizer = ClassBalance(labels=list(ENCODING.keys()))
+    visualizer.fit(y_train)
+    visualizer.show(outpath=str(plot_path / config["plots"]["balance"]))
+    plt.gcf().clear()
+    del visualizer
+    # # Rank1D, Rank2D <- Make this one last or debug matplotlib. Your choice.
+    # fig, axes = plt.subplots(ncols=2, figsize=(8, 4))
+    # rank1d(X_train, ax=axes[0])
+    # rank2d(X_train, ax=axes[1])
+    # fig.savefig(str(plot_path / config["plots"]["rank"]))
+    # del fig
+    # del axes

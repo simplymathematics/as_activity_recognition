@@ -39,7 +39,7 @@ class Model(
         params = obj_tuple[1]
         if len(args) > 0:
             global positional_arg
-            positional_arg = args[0]
+            positional_arg = args[:]
             exec(
                 f"temp_object = tmp_library.{class_name}(positional_arg, **{params})",
                 globals(),
@@ -64,9 +64,6 @@ class Model(
                 pipe_list.append((name, obj_))
                 i += 1
             model = Pipeline(pipe_list)
-        else:
-            tup = (self.model.pop("name"), self.model)
-            model = self.gen_from_tup(tup)
         if self.search is not None:
             dict_ = dict(self.search)
             name = str(dict_.pop('name'))
@@ -75,7 +72,12 @@ class Model(
                 self.search.update({"param_grid": self.grid})
                 self.search.update({"estimator": model})
                 _ = self.search.pop("name")
-                model = self.gen_from_tup((name, self.search))
+                print(f"Name: {name}")
+                print(f"Search: {self.search}")
+                print(f"Grid: {self.grid}")
+                print(f"Model: {model}")
+                input("Press enter to continue...")
+                model = self.gen_from_tup((name, self.search), model)
             else:
                 model = self.gen_from_tup((name, self.search))
         return model
@@ -106,7 +108,8 @@ if __name__ == "__main__":
         k : [10, 20, 30]
     """
     document = "!Model\n" + document
-    config = yaml.load(document)
+    config = yaml.unsafe_load(document)
     model = config.load()
+    print(model)
     assert hasattr(model, "fit"), "Model must have a fit method"
     assert hasattr(model, "predict"), "Model must have a predict method"

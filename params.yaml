@@ -41,9 +41,11 @@ result: # result path
   path: results
   test: data/features/test_data.npz
   scores: scores.json
+  cv: cv_scores.json
 search:
   name : sklearn.model_selection.GridSearchCV
   refit : True
+  return_train_score : True
 grid:
   penalty : ["l2", "l1","elasticnet"]
   alpha: [.00001, .00001, .0001, .001, .01, .1, 1, 10, 100, 1000]

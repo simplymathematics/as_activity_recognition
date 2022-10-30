@@ -5,7 +5,7 @@ from pathlib import Path
 import dvc.api
 import matplotlib.pyplot as plt
 import numpy as np
-from pandas import Series
+from pandas import Series, DataFrame
 from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import (
@@ -126,9 +126,17 @@ if __name__ == "__main__":
     result_path = Path(config["result"]["path"], config["result"]["scores"])
     result_path.parent.mkdir(parents=True, exist_ok=True)
     df = Series(score_dict)
-    # df["score"] = score_dict.values()
-    # df["scorer"] = score_dict.keys()
     df.to_json(result_path)
+    if hasattr(model, "cv_results_"):
+        cv_df = DataFrame(model.cv_results_)
+        print(cv_df.head())
+        input("Press enter to continue...")
+        print(f"Saving cross validation results to {config['result']['path']}...")
+        cv_path = Path(config["result"]["path"], config["result"]["cv"])
+        cv_df.to_csv(cv_path)
+    else:
+        print("No cross validation results to save")
+        print(f"Model is a {type(model)}")
     ####################################
     #           Visualising            #
     ####################################

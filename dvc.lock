@@ -23,8 +23,8 @@ stages:
     cmd: python3 classify.py
     deps:
     - path: classify.py
-      md5: bcdbea0075102c7c269048eed4fb9455
-      size: 8717
+      md5: 17fb76dc297a5ac4bd16da75291340a5
+      size: 9104
     - path: data
       md5: a67ff8934c671585094a1086ea16d77e.dir
       size: 25417776
@@ -82,35 +82,35 @@ stages:
       size: 17485
       isexec: true
     - path: results/classification.png
-      md5: 6176209a530034884698648a0bdf929f
-      size: 29305
+      md5: b35bbaf10624451cc162d551379be828
+      size: 27748
       isexec: true
     - path: results/confusion.png
-      md5: dcd2bad61d3556ebd80e44a6775cecda
-      size: 26641
+      md5: 3c0c2f29513d33da1c981199f938d8d9
+      size: 26753
       isexec: true
     - path: results/cross_validation.png
-      md5: f57bd63afcfe678142f36578bee488cb
-      size: 25144
+      md5: ae555fd0cce4a15e9bbf9d965f360b69
+      size: 25002
       isexec: true
     - path: results/dropping.png
-      md5: 16a16b8dadb7ecf2785302b8a6f60665
-      size: 53958
+      md5: d59ef4fca1df418e9ca4537c3798517b
+      size: 58666
       isexec: true
     - path: results/learning.png
-      md5: a8253bef7ce0444f8b88ca2ba38c4875
-      size: 47986
+      md5: db821ac33b3ebc39e6d3a6baa1bc1d94
+      size: 47302
       isexec: true
     - path: results/pca.png
       md5: 3c5fae8d1d4b55e80b2c476f341e27c0
       size: 120805
       isexec: true
     - path: results/roc_auc.png
-      md5: d14b8a5543942703d0efaa342dc4aabf
-      size: 56266
+      md5: decb3c7f1824d2440fa10f5387b907b5
+      size: 55584
       isexec: true
     - path: results/scores.json
-      md5: 22142674a68fbe774bd804c8cfd2904a
+      md5: 1196925acef874a4e78a3b443a8f195a
       size: 77
       isexec: true
   print:
@@ -121,12 +121,12 @@ stages:
     cmd: dvc plots show -o results
     deps:
     - path: classify.py
-      md5: bcdbea0075102c7c269048eed4fb9455
-      size: 8717
+      md5: 17fb76dc297a5ac4bd16da75291340a5
+      size: 9104
     - path: results
-      md5: 74526e5ef8bf0190e79bc049c51aef13.dir
-      size: 792993
-      nfiles: 21
+      md5: b960912657e02b5b2c00eaa591e52741.dir
+      size: 798318
+      nfiles: 22
   server:
     cmd: cd results  && python -m http.server &
     deps:
@@ -140,5 +140,5 @@ stages:
       md5: aa9bbda3d626c4b58a4bac58ec64a922
       size: 4611
     - path: results/scores.json
-      md5: 22142674a68fbe774bd804c8cfd2904a
+      md5: 1196925acef874a4e78a3b443a8f195a
       size: 77

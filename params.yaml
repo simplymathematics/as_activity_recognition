@@ -20,16 +20,17 @@ pipeline: # Determine the sklearn pipeline order
 - model
 model: # Model
   name : sklearn.linear_model.SGDClassifier
-  max_iter : 1000
-  alpha : .0001
-  l1_ratio : .15
+  max_iter : [1000]
+  penalty : ["l2", "l1","elasticnet"]
+  alpha: [.00001,  .0001, .01,  1, 10, 100]
+  l1_ratio : [.10, .20, .30, .50, .7]
 preprocessor: # Centers and Scales
   name : sklearn.preprocessing.StandardScaler
-  with_std : True
-  with_mean : True
+  with_std : [True]
+  with_mean : [True]
 feature_selector: # Selects Features
   name : sklearn.feature_selection.SelectKBest
-  k : 100
+  k : [10, 30, 50, 100]
 sample: # Samples the Data
   name: data/features/train_data.npz
   shuffle : True
@@ -46,11 +47,8 @@ search:
   name : sklearn.model_selection.GridSearchCV
   refit : True
   return_train_score : True
-grid:
-  penalty : ["l2", "l1","elasticnet"]
-  alpha: [.00001, .00001, .0001, .001, .01, .1, 1, 10, 100, 1000]
-  l1_ratio : [.1, .15, .2, .25, .3, .5]
-  k : [10, 20, 30, 50, 100]
+  verbose : 1
+  n_jobs : -1
 plots: #plots
   balance: balance.png
   rank: rank.png

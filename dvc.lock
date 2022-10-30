@@ -23,8 +23,8 @@ stages:
     cmd: python3 classify.py
     deps:
     - path: classify.py
-      md5: 17fb76dc297a5ac4bd16da75291340a5
-      size: 9104
+      md5: bcb9c918fd8ea152052302d7c4b3dda4
+      size: 9230
     - path: data
       md5: a67ff8934c671585094a1086ea16d77e.dir
       size: 25417776
@@ -33,84 +33,81 @@ stages:
       params.yaml:
         feature_selector:
           name: sklearn.feature_selection.SelectKBest
-          k: 100
-        grid:
+          k:
+          - 10
+          - 30
+          - 50
+          - 100
+        model:
+          name: sklearn.linear_model.SGDClassifier
+          max_iter:
+          - 1000
           penalty:
           - l2
           - l1
           - elasticnet
           alpha:
           - 1e-05
-          - 1e-05
           - 0.0001
-          - 0.001
           - 0.01
-          - 0.1
           - 1
           - 10
           - 100
-          - 1000
           l1_ratio:
           - 0.1
-          - 0.15
           - 0.2
-          - 0.25
           - 0.3
           - 0.5
-          k:
-          - 10
-          - 20
-          - 30
-          - 50
-          - 100
-        model:
-          name: sklearn.linear_model.SGDClassifier
-          max_iter: 1000
-          alpha: 0.0001
-          l1_ratio: 0.15
+          - 0.7
         pipeline:
         - preprocessor
         - feature_selector
         - model
         preprocessor:
           name: sklearn.preprocessing.StandardScaler
-          with_std: true
-          with_mean: true
+          with_std:
+          - true
+          with_mean:
+          - true
     outs:
     - path: results/balance.png
       md5: 430eea2d627ff7ab9c787c086bdafcc5
       size: 17485
       isexec: true
     - path: results/classification.png
-      md5: b35bbaf10624451cc162d551379be828
-      size: 27748
+      md5: 08722a4073dd2ed84e5e2014454a53ff
+      size: 27754
       isexec: true
     - path: results/confusion.png
-      md5: 3c0c2f29513d33da1c981199f938d8d9
-      size: 26753
+      md5: aa21f9099e2ed1cddcbdf173e82e8828
+      size: 26646
       isexec: true
     - path: results/cross_validation.png
-      md5: ae555fd0cce4a15e9bbf9d965f360b69
-      size: 25002
+      md5: 9239fd0f2e286b76148ae2dda2cfef54
+      size: 25069
+      isexec: true
+    - path: results/cv_scores.json
+      md5: 6fc997aa65adf248d5ce3b0b20df27bd
+      size: 151405
       isexec: true
     - path: results/dropping.png
-      md5: d59ef4fca1df418e9ca4537c3798517b
-      size: 58666
+      md5: 30e1a5dadb7f20485532cd41ea4ced66
+      size: 55959
       isexec: true
     - path: results/learning.png
-      md5: db821ac33b3ebc39e6d3a6baa1bc1d94
-      size: 47302
+      md5: 9e4cc2a880b5fd2bdd1dce6bb92ab2b2
+      size: 42514
       isexec: true
     - path: results/pca.png
-      md5: 3c5fae8d1d4b55e80b2c476f341e27c0
-      size: 120805
+      md5: f4a28fef2a87492fccd3db42f4b92015
+      size: 97583
       isexec: true
     - path: results/roc_auc.png
-      md5: decb3c7f1824d2440fa10f5387b907b5
-      size: 55584
+      md5: b5ea4dc024a273d542cd65c6bb0e8bc7
+      size: 55583
       isexec: true
     - path: results/scores.json
-      md5: 1196925acef874a4e78a3b443a8f195a
+      md5: 1ad69d3d8b43d2ac8893999da4d4d024
       size: 77
       isexec: true
   print:
@@ -121,11 +118,11 @@ stages:
     cmd: dvc plots show -o results
     deps:
     - path: classify.py
-      md5: 17fb76dc297a5ac4bd16da75291340a5
-      size: 9104
+      md5: bcb9c918fd8ea152052302d7c4b3dda4
+      size: 9230
     - path: results
-      md5: b960912657e02b5b2c00eaa591e52741.dir
-      size: 798318
+      md5: 47b417cdda93ae18d8917d1b655a549f.dir
+      size: 882317
       nfiles: 22
   server:
     cmd: cd results  && python -m http.server &
@@ -140,5 +137,5 @@ stages:
       md5: aa9bbda3d626c4b58a4bac58ec64a922
       size: 4611
     - path: results/scores.json
-      md5: 1196925acef874a4e78a3b443a8f195a
+      md5: 1ad69d3d8b43d2ac8893999da4d4d024
       size: 77

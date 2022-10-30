@@ -32,9 +32,9 @@ stages:
     - model
     - preprocessor
     - feature_selector
-    - grid
     metrics:
     - ${result.path}/${result.scores}
+    - ${result.path}/${result.cv}
   plot:
     cmd: dvc plots show -o results
     deps:

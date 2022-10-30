@@ -118,7 +118,18 @@ if __name__ == "__main__":
                 score_dict.update(
                     {key: value(y_test, model.predict(X_test), average="weighted")},
                 )
-
+    if hasattr(model, "best_estimator_"):
+        if hasattr(model, "cv_results_"):
+            cv_df = DataFrame(model.cv_results_)
+            print(cv_df.head())
+            print(f"Saving cross validation results to {config['result']['path']}...")
+            cv_path = Path(config["result"]["path"], config["result"]["cv"])
+            cv_df.to_csv(cv_path)
+        else:
+            input("Press enter to continue...")
+            print("No cross validation results to save")
+            print(f"Model is a {type(model)}")
+        model = model.best_estimator_
     ####################################
     #             Saving               #
     ####################################
@@ -127,16 +138,7 @@ if __name__ == "__main__":
     result_path.parent.mkdir(parents=True, exist_ok=True)
     df = Series(score_dict)
     df.to_json(result_path)
-    if hasattr(model, "cv_results_"):
-        cv_df = DataFrame(model.cv_results_)
-        print(cv_df.head())
-        input("Press enter to continue...")
-        print(f"Saving cross validation results to {config['result']['path']}...")
-        cv_path = Path(config["result"]["path"], config["result"]["cv"])
-        cv_df.to_csv(cv_path)
-    else:
-        print("No cross validation results to save")
-        print(f"Model is a {type(model)}")
+    
     ####################################
     #           Visualising            #
     ####################################

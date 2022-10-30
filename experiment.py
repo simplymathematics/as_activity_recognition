@@ -18,12 +18,11 @@ def load_experiment(filename="params.yaml", input_data_key="sample", model_key="
         full = yaml.load(f, Loader=yaml.Loader)
     pipe = full["pipeline"]
     document = {}
-    pipe_list = []
     for entry in pipe:
-        pipe_list.append(entry)
-        if entry is not model_key:
             document[entry] = full[entry]
-    document['pipeline'] = pipe_list
+    document['pipeline'] = pipe
+    if "search" in full:
+        document["search"] = full["search"]
     document = str(document)
     config = yaml.load("!Model\n" + document, Loader=yaml.Loader)
     assert isinstance(config, Model)
@@ -32,6 +31,7 @@ def load_experiment(filename="params.yaml", input_data_key="sample", model_key="
 
 
 if __name__ == "__main__":
+    print("Loading config")
     data, model = load_experiment()
     assert "X_train" in data, "X_train not found"
     assert "X_test" in data, "X_test not found"
@@ -39,3 +39,9 @@ if __name__ == "__main__":
     assert "y_test" in data, "y_test not found"
     assert hasattr(model, "fit"), "Model must have a fit method"
     assert hasattr(model, "predict"), "Model must have a predict method"
+    print("Running science...")
+    model.fit(data["X_train"], data["y_train"], )
+    model.predict(data["X_test"])
+    score = model.score(data["X_test"], data["y_test"])
+    print(f"Score: {score}")
+    

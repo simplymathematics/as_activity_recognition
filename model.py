@@ -7,8 +7,8 @@ from sklearn.pipeline import Pipeline
 class Model(
     collections.namedtuple(
         "Model",
-        ("model", "pipeline", "preprocessor", "feature_selector", "search", "grid"),
-        defaults=(None, None, None, None, None),
+        ("model", "pipeline", "preprocessor", "feature_selector", "search"),
+        defaults=(None, None, None, None),
     ),
 ):
     def __new__(cls, loader, node):
@@ -54,7 +54,26 @@ class Model(
         return temp_object
 
     def load(self):
-        if self.pipeline is not None:
+        if self.search is not None and self.pipeline is not None:
+            pipe_list = []
+            search_name = self.search.pop("name")
+            grid = {}
+            for name in self.pipeline:
+                component = getattr(self, name)
+                type_ = component.pop("name")
+                for key, value in component.items():
+                    new_key = name + "__" + key
+                    if not isinstance(value, list):
+                        value = [value]
+                    grid[new_key] = value
+                obj_ = self.gen_from_tup((type_, {}))
+                pipe_list.append((name, obj_))
+                estimator = Pipeline(pipe_list)
+                params  = {"param_grid": grid}
+                params.update(self.search)
+                params.update({"estimator": estimator})
+            model = self.gen_from_tup((search_name, params))
+        elif self.pipeline is not None and self.search is None:
             pipe_list = []
             i = 0
             for name in self.pipeline:
@@ -64,22 +83,8 @@ class Model(
                 pipe_list.append((name, obj_))
                 i += 1
             model = Pipeline(pipe_list)
-        if self.search is not None:
-            dict_ = dict(self.search)
-            name = str(dict_.pop('name'))
-            if "grid" in name.lower():
-                assert self.grid is not None, "if grid search is specified, param_grid must be specified."
-                self.search.update({"param_grid": self.grid})
-                self.search.update({"estimator": model})
-                _ = self.search.pop("name")
-                print(f"Name: {name}")
-                print(f"Search: {self.search}")
-                print(f"Grid: {self.grid}")
-                print(f"Model: {model}")
-                input("Press enter to continue...")
-                model = self.gen_from_tup((name, self.search), model)
-            else:
-                model = self.gen_from_tup((name, self.search))
+        else:
+            model = self.gen_from_tup((self.model.pop('name'), self.model))
         return model
 
 
@@ -89,27 +94,26 @@ if __name__ == "__main__":
     pipeline:
     - preprocessor
     - feature_selector
-    model:
-        name : sklearn.ensemble.RandomForestClassifier
-        n_estimators : 10
-        max_depth : 1
-    preprocessor:
+    - model
+    model: # Model
+        name : sklearn.linear_model.SGDClassifier
+        max_iter : [1000]
+        penalty : ["l2", "l1","elasticnet"]
+        alpha: [.00001, .00001, .0001, .001, .01, .1, 1, 10, 100, 1000]
+        l1_ratio : [.10, .20, .30, .50, .7, .9]
+    preprocessor: # Centers and Scales
         name : sklearn.preprocessing.StandardScaler
         with_std : True
         with_mean : True
-    feature_selector:
+    feature_selector: # Selects Features
         name : sklearn.feature_selection.SelectKBest
-        k: 30
+        k : [10, 20, 30, 50, 100]
     search:
         name : sklearn.model_selection.GridSearchCV
         refit : True
-    grid:
-        n_estimators : [10, 20, 30]
-        k : [10, 20, 30]
     """
     document = "!Model\n" + document
-    config = yaml.unsafe_load(document)
+    config = yaml.load(document, Loader=yaml.FullLoader)
     model = config.load()
-    print(model)
     assert hasattr(model, "fit"), "Model must have a fit method"
     assert hasattr(model, "predict"), "Model must have a predict method"

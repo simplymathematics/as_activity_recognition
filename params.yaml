@@ -8,7 +8,7 @@ preprocessing:
   time: time_windows
   feat: features
   zip: Activity_Recognition_Logs.zip
-  key: ori
+  key: acc
   window : 10
   stride : 2
   data_file : data.npz
@@ -19,16 +19,17 @@ pipeline: # Determine the sklearn pipeline order
 - feature_selector
 - model
 model: # Model
-  name : sklearn.ensemble.RandomForestClassifier
-  n_estimators : 100
-  max_depth : 10
+  name : sklearn.linear_model.SGDClassifier
+  max_iter : 1000
+  alpha : .0001
+  l1_ratio : .15
 preprocessor: # Centers and Scales
-  name : sklearn.preprocessor.StandardScaler
+  name : sklearn.preprocessing.StandardScaler
   with_std : True
   with_mean : True
 feature_selector: # Selects Features
   name : sklearn.feature_selection.SelectKBest
-  k: 100
+  k : 100
 sample: # Samples the Data
   name: data/features/train_data.npz
   shuffle : True
@@ -44,19 +45,22 @@ search:
   name : sklearn.model_selection.GridSearchCV
   refit : True
 grid:
-  n_estimators : [10, 20, 30, 50, 100]
+  penalty : ["l2", "l1","elasticnet"]
+  alpha: [.00001, .00001, .0001, .001, .01, .1, 1, 10, 100, 1000]
+  l1_ratio : [.1, .15, .2, .25, .3, .5]
   k : [10, 20, 30, 50, 100]
-  max_depth : [10, 20, 30, 50, 100]
 plots: #plots
   balance: balance.png
   rank: rank.png
   confusion: confusion.png
   classification: classification.png
   pca : pca.png
-  # dropping : dropping.png
-  # learning : learning.png
-  # cross_validation : cross_validation.png
-  # feature_importance : feature_importance.png
-  # rocauc: roc_auc.png
-  # confusion : confusion.png
-  # classification : classification.png
+  dropping : dropping.png
+  learning : learning.png
+  cross_validation : cross_validation.png
+  feature_importance : feature_importance.png
+  roc_auc: roc_auc.png
+  information: pearson.png
+  n_estimators_validation: n_estimators_validation.png
+  k_validation: k_validation.png
+  max_depth_validation: max_depth_validation.png

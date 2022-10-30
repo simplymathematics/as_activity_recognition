@@ -54,28 +54,20 @@ class Model(
         return temp_object
 
     def load(self):
-        # Initialize model
-        tup = (self.model.pop("name"), self.model)
-        model = self.gen_from_tup(tup)
-        pipe_list = []
-        i = 0
-        # Initialize pipeline
         if self.pipeline is not None:
-            # if "cache" in self.pipeline:
-            #     cache = self.pipeline.pop("cache")
+            pipe_list = []
+            i = 0
             for name in self.pipeline:
-                print(f"name is: {name}")
                 component = getattr(self, name)
-                print(component)
                 type_ = component.pop("name")
                 obj_ = self.gen_from_tup((type_, component))
                 pipe_list.append((name, obj_))
-                i += 0
-            pipe_list.append(("model", model))
+                i += 1
             model = Pipeline(pipe_list)
+        else:
+            tup = (self.model.pop("name"), self.model)
+            model = self.gen_from_tup(tup)
         if self.search is not None:
-            print(self.search)
-            print(type(self.search))
             dict_ = dict(self.search)
             name = str(dict_.pop('name'))
             if "grid" in name.lower():
@@ -114,7 +106,7 @@ if __name__ == "__main__":
         k : [10, 20, 30]
     """
     document = "!Model\n" + document
-    config = yaml.unsafe_load(document)
+    config = yaml.load(document)
     model = config.load()
     assert hasattr(model, "fit"), "Model must have a fit method"
     assert hasattr(model, "predict"), "Model must have a predict method"

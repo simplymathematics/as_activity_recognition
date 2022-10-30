@@ -11,89 +11,134 @@ stages:
       size: 6166
     params:
       params.yaml:
-        preprocessing.key: ori
+        preprocessing.key: acc
         preprocessing.stride: 2
         preprocessing.window: 10
     outs:
     - path: data
-      md5: dcee01df873d83cf0a3a981a583e6dd9.dir
-      size: 23459189
+      md5: a67ff8934c671585094a1086ea16d77e.dir
+      size: 25417776
       nfiles: 34
   classify:
     cmd: python3 classify.py
     deps:
     - path: classify.py
-      md5: 6317a96a55d7b83a83ff701821d40958
-      size: 7094
+      md5: bcdbea0075102c7c269048eed4fb9455
+      size: 8717
     - path: data
-      md5: dcee01df873d83cf0a3a981a583e6dd9.dir
-      size: 23459189
+      md5: a67ff8934c671585094a1086ea16d77e.dir
+      size: 25417776
       nfiles: 34
-    - path: params.yaml
-      md5: a2d94d8232b7450417062a740a7afabf
-      size: 1481
     params:
       params.yaml:
         feature_selector:
           name: sklearn.feature_selection.SelectKBest
           k: 100
         grid:
-          n_estimators:
+          penalty:
+          - l2
+          - l1
+          - elasticnet
+          alpha:
+          - 1e-05
+          - 1e-05
+          - 0.0001
+          - 0.001
+          - 0.01
+          - 0.1
+          - 1
           - 10
-          - 20
-          - 30
-          - 50
           - 100
+          - 1000
+          l1_ratio:
+          - 0.1
+          - 0.15
+          - 0.2
+          - 0.25
+          - 0.3
+          - 0.5
           k:
           - 10
           - 20
           - 30
           - 50
           - 100
-          max_depth:
-          - 10
-          - 20
-          - 30
-          - 50
-          - 100
         model:
-          name: sklearn.ensemble.RandomForestClassifier
-          n_estimators: 100
-          max_depth: 10
+          name: sklearn.linear_model.SGDClassifier
+          max_iter: 1000
+          alpha: 0.0001
+          l1_ratio: 0.15
         pipeline:
         - preprocessor
         - feature_selector
         - model
         preprocessor:
-          name: sklearn.preprocessor.StandardScaler
+          name: sklearn.preprocessing.StandardScaler
           with_std: true
           with_mean: true
     outs:
     - path: results/balance.png
-      md5: c8d8410b964875688b427d642b7497b2
-      size: 17496
+      md5: 430eea2d627ff7ab9c787c086bdafcc5
+      size: 17485
       isexec: true
     - path: results/classification.png
-      md5: 1e7a5d261ce5ac930dd411d41b2583bd
-      size: 35728
+      md5: 6176209a530034884698648a0bdf929f
+      size: 29305
       isexec: true
     - path: results/confusion.png
-      md5: d8db930f1da57c54277533be7c2c9c73
-      size: 27334
+      md5: dcd2bad61d3556ebd80e44a6775cecda
+      size: 26641
+      isexec: true
+    - path: results/cross_validation.png
+      md5: f57bd63afcfe678142f36578bee488cb
+      size: 25144
+      isexec: true
+    - path: results/dropping.png
+      md5: 16a16b8dadb7ecf2785302b8a6f60665
+      size: 53958
+      isexec: true
+    - path: results/learning.png
+      md5: a8253bef7ce0444f8b88ca2ba38c4875
+      size: 47986
       isexec: true
     - path: results/pca.png
-      md5: 4479664c3233f9ebec8273c304fa3b65
-      size: 29842
+      md5: 3c5fae8d1d4b55e80b2c476f341e27c0
+      size: 120805
       isexec: true
-    - path: results/rank.png
-      md5: 43e434f48c29b49a846af197aee6ef0d
-      size: 94897
+    - path: results/roc_auc.png
+      md5: d14b8a5543942703d0efaa342dc4aabf
+      size: 56266
       isexec: true
     - path: results/scores.json
-      md5: 1215bc8826b7a5752962fadf8447b6cb
+      md5: 22142674a68fbe774bd804c8cfd2904a
       size: 77
       isexec: true
   print:
     cmd: cat params.yaml
   print-params:
     cmd: cat params.yaml
+  plot:
+    cmd: dvc plots show -o results
+    deps:
+    - path: classify.py
+      md5: bcdbea0075102c7c269048eed4fb9455
+      size: 8717
+    - path: results
+      md5: 74526e5ef8bf0190e79bc049c51aef13.dir
+      size: 792993
+      nfiles: 21
+  server:
+    cmd: cd results  && python -m http.server &
+    deps:
+    - path: results/index.html
+      md5: aa9bbda3d626c4b58a4bac58ec64a922
+      size: 4611
+  score:
+    cmd: dvc metrics show --all-branches --all-commits --md > results/table.md
+    deps:
+    - path: results/index.html
+      md5: aa9bbda3d626c4b58a4bac58ec64a922
+      size: 4611
+    - path: results/scores.json
+      md5: 22142674a68fbe774bd804c8cfd2904a
+      size: 77

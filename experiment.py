@@ -18,9 +18,12 @@ def load_experiment(filename="params.yaml", input_data_key="sample", model_key="
         full = yaml.load(f, Loader=yaml.Loader)
     pipe = full["pipeline"]
     document = {}
+    pipe_list = []
     for entry in pipe:
+        pipe_list.append(entry)
         if entry is not model_key:
             document[entry] = full[entry]
+    document['pipeline'] = pipe_list
     document = str(document)
     config = yaml.load("!Model\n" + document, Loader=yaml.Loader)
     assert isinstance(config, Model)

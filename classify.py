@@ -28,7 +28,7 @@ from yellowbrick.classifier import (
     ConfusionMatrix,
     PrecisionRecallCurve,
 )
-from yellowbrick.features import rank1d, rank2d, PCA
+from yellowbrick.features import PCA
 from yellowbrick.model_selection import (
     CVScores,
     DroppingCurve,
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     else:
         X_train = data["X_train"]
         y_train = data["y_train"]
-        test_data = np.load(config['result']['test'])
+        test_data = np.load(config["result"]["test"])
         X_test = test_data["X"]
         y_test = test_data["y"]
     ####################################
@@ -138,7 +138,7 @@ if __name__ == "__main__":
     result_path.parent.mkdir(parents=True, exist_ok=True)
     df = Series(score_dict)
     df.to_json(result_path)
-    
+
     ####################################
     #           Visualising            #
     ####################################
@@ -162,7 +162,7 @@ if __name__ == "__main__":
         ClassPredictionError,
     )
     plot_path = result_path.parent
-    
+
     # Confusion Matrix
     print("Visualizing Confusion Matrix")
     visualizer = ConfusionMatrix(model, classes=list(ENCODING.keys()))
@@ -178,14 +178,14 @@ if __name__ == "__main__":
     visualizer.score(X_test, y_test)
     visualizer.show(outpath=str(plot_path / config["plots"]["classification"]))
     plt.gcf().clear()
-    
+
     del visualizer
-    
+
     cv = StratifiedKFold(n_splits=10)
-    
+
     if isinstance(model, Pipeline):
         print("Splitting Pipeline")
-        full =  Pipeline(model.steps[:])
+        full = Pipeline(model.steps[:])
         big_X = X_train
         big_y = y_train
         transformers = Pipeline(model.steps[:-1])
@@ -195,7 +195,7 @@ if __name__ == "__main__":
         model = model.steps[-1][1]
     # else:
     #     features = np.array(range(X_train.shape[1]))
-    
+
     # PCA Visualization
     print("Visualizing PCA")
     visualizer = PCA(scale=True, classes=list(ENCODING.keys()))
@@ -211,24 +211,30 @@ if __name__ == "__main__":
     # del visualizer
     # Feature Selection
     print("Visualizing Feature Selection")
-    visualizer = DroppingCurve(model, scoring='f1_weighted', cv = cv)
+    visualizer = DroppingCurve(model, scoring="f1_weighted", cv=cv)
     visualizer.fit(X_train, y_train)
-    visualizer.show(outpath = str(plot_path / config['plots']['dropping']))
+    visualizer.show(outpath=str(plot_path / config["plots"]["dropping"]))
     plt.gcf().clear()
     del visualizer
     # Learning Curve
     print("Visualizing Learning Curve")
     sizes = [0.01, 0.1, 0.25, 0.5, 0.75, 1.0]
-    visualizer = LearningCurve(model, cv=cv, scoring='f1_weighted', train_sizes=sizes, n_jobs=4)
+    visualizer = LearningCurve(
+        model,
+        cv=cv,
+        scoring="f1_weighted",
+        train_sizes=sizes,
+        n_jobs=4,
+    )
     visualizer.fit(X_train, y_train)
-    visualizer.show(outpath = str(plot_path / config['plots']['learning']))
+    visualizer.show(outpath=str(plot_path / config["plots"]["learning"]))
     plt.gcf().clear()
     del visualizer
     # Cross Validation
     print("Visualizing Cross Validation")
-    visualizer = CVScores(model, cv=cv, scoring='f1_weighted')
+    visualizer = CVScores(model, cv=cv, scoring="f1_weighted")
     visualizer.fit(X_train, y_train)
-    visualizer.show(outpath = str(plot_path / config['plots']['cross_validation']))
+    visualizer.show(outpath=str(plot_path / config["plots"]["cross_validation"]))
     plt.gcf().clear()
     del visualizer
     # Feature Importance
@@ -241,7 +247,7 @@ if __name__ == "__main__":
     visualizer = ROCAUC(model, classes=list(ENCODING.items())[:])
     visualizer.fit(X_train, y_train)
     visualizer.score(X_test, y_test)
-    visualizer.show(outpath = str(plot_path / config['plots']['roc_auc']))
+    visualizer.show(outpath=str(plot_path / config["plots"]["roc_auc"]))
     plt.gcf().clear()
     del visualizer
     # Balance

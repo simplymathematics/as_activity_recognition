@@ -17,14 +17,14 @@ flowchart TD
 	model["model"]
 	params["params.yaml"]
 	reports["reports"]
-	
+
 	params-->raw
 	params-->feat
 	params-->pre
 	params-->sel
 	params-->model
 	params-->reports
-	
+
 	subgraph preprocess.py
 	raw-->feat
 	end

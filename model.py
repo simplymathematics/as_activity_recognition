@@ -69,7 +69,7 @@ class Model(
                 obj_ = self.gen_from_tup((type_, {}))
                 pipe_list.append((name, obj_))
                 estimator = Pipeline(pipe_list)
-                params  = {"param_grid": grid}
+                params = {"param_grid": grid}
                 params.update(self.search)
                 params.update({"estimator": estimator})
             model = self.gen_from_tup((search_name, params))
@@ -84,7 +84,7 @@ class Model(
                 i += 1
             model = Pipeline(pipe_list)
         else:
-            model = self.gen_from_tup((self.model.pop('name'), self.model))
+            model = self.gen_from_tup((self.model.pop("name"), self.model))
         return model
 
 

@@ -17,7 +17,7 @@ def create_directories(dirs: list):
     return directories
 
 
-def extract_feat_data_from_raw(path_raw: Path, path_out: Path, key = 'acc'):
+def extract_feat_data_from_raw(path_raw: Path, path_out: Path, key="acc"):
     for path_f in path_raw.iterdir():
         path_feat = path_out / path_f.name
         with path_f.open() as fp:
@@ -45,7 +45,12 @@ def extract_time_windows(
         i = int(path_f.stem.split("_")[-1])
         if i in file_nrs:
             all_data.append(
-                extract_time_windows_from_feat_file(path_f, encoding, key=key, filename = filename),
+                extract_time_windows_from_feat_file(
+                    path_f,
+                    encoding,
+                    key=key,
+                    filename=filename,
+                ),
             )
     all_data = np.vstack(all_data)
     nr_data_points = all_data.shape[0]
@@ -59,7 +64,7 @@ def extract_time_windows(
 def extract_time_windows_from_feat_file(
     path_f_acc: Path,
     encoding: dict,
-    key:str = 'acc',
+    key: str = "acc",
     time_window_size=100,
     stride=10,
     filename="data.npz",
@@ -140,7 +145,9 @@ if __name__ == "__main__":
         sensor_path = data_path / config["preprocessing"][key]
     except KeyError as e:
         print(e)
-        raise Exception("You must specify a location for {key} in the 'preprocessing' section of the params.yaml file.")
+        raise Exception(
+            "You must specify a location for {key} in the 'preprocessing' section of the params.yaml file.",
+        )
     windows = data_path / config["preprocessing"]["time"]
     features = data_path / config["preprocessing"]["feat"]
     input_data = config["preprocessing"]["zip"]
@@ -150,7 +157,7 @@ if __name__ == "__main__":
     with zipfile.ZipFile(input_data, "r") as zip_ref:
         zip_ref.extractall(raw_path)
     print(f"Extracting {key} data")
-    extract_feat_data_from_raw(raw_path, sensor_path, key = key)
+    extract_feat_data_from_raw(raw_path, sensor_path, key=key)
     print("Extracting time windows")
     train_file = config["preprocessing"]["train_key"] + str("_" + data_file)
     test_file = config["preprocessing"]["test_key"] + str("_" + data_file)
@@ -158,26 +165,34 @@ if __name__ == "__main__":
     train_data = extract_time_windows(
         file_nrs=(1, 2, 3, 4),
         path_feat=sensor_path,
-        path_time_windows= windows,
+        path_time_windows=windows,
         encoding=ENCODING,
         time_window_size=window_size,
         stride=stride,
         key=key,
-        filename = train_file,
+        filename=train_file,
     )
     print("Creating test data")
     test_data = extract_time_windows(
         file_nrs=(5,),
         path_feat=sensor_path,
-        path_time_windows= windows,
+        path_time_windows=windows,
         encoding=ENCODING,
         time_window_size=window_size,
         stride=stride,
         key=key,
-        filename = test_file,
+        filename=test_file,
     )
-    
+
     print("Creating training features")
-    create_features_from_data(inpath=Path(windows, train_file), outpath= Path(features , train_file), data = train_data)
+    create_features_from_data(
+        inpath=Path(windows, train_file),
+        outpath=Path(features, train_file),
+        data=train_data,
+    )
     print("Creating test features")
-    create_features_from_data(inpath=Path(windows, test_file), outpath= Path(features , test_file), data = test_data)
+    create_features_from_data(
+        inpath=Path(windows, test_file),
+        outpath=Path(features, test_file),
+        data=test_data,
+    )

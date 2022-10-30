@@ -16,7 +16,7 @@ stages:
         preprocessing.window: 10
     outs:
     - path: data
-      md5: a67ff8934c671585094a1086ea16d77e.dir
+      md5: e5706d4280695b8c37664f1588c58131.dir
       size: 25417776
       nfiles: 34
   classify:
@@ -26,7 +26,7 @@ stages:
       md5: bcb9c918fd8ea152052302d7c4b3dda4
       size: 9230
     - path: data
-      md5: a67ff8934c671585094a1086ea16d77e.dir
+      md5: e5706d4280695b8c37664f1588c58131.dir
       size: 25417776
       nfiles: 34
     params:
@@ -73,33 +73,43 @@ stages:
     - path: results/balance.png
       md5: 430eea2d627ff7ab9c787c086bdafcc5
       size: 17485
+      isexec: true
     - path: results/classification.png
-      md5: 08722a4073dd2ed84e5e2014454a53ff
-      size: 27754
+      md5: 8d64fb5a76a5d5350beaa41e7599fd66
+      size: 28044
+      isexec: true
     - path: results/confusion.png
-      md5: aa21f9099e2ed1cddcbdf173e82e8828
-      size: 26646
+      md5: f49b13bc84a3610e8419257130255c0f
+      size: 26413
+      isexec: true
     - path: results/cross_validation.png
-      md5: 9239fd0f2e286b76148ae2dda2cfef54
-      size: 25069
+      md5: 4f634e5916bdc1dc9c7fe6afcfeaa7b4
+      size: 25086
+      isexec: true
     - path: results/cv_scores.json
-      md5: 6fc997aa65adf248d5ce3b0b20df27bd
-      size: 151405
+      md5: 5b8ef236768e53bb08d22f90d2260245
+      size: 151544
+      isexec: true
     - path: results/dropping.png
-      md5: 30e1a5dadb7f20485532cd41ea4ced66
-      size: 55959
+      md5: eea8e36639461c0da9833c31b1247001
+      size: 55318
+      isexec: true
     - path: results/learning.png
-      md5: 9e4cc2a880b5fd2bdd1dce6bb92ab2b2
-      size: 42514
+      md5: 29e7a64ec1fcd7412b2ea7a4c7d712e4
+      size: 46635
+      isexec: true
     - path: results/pca.png
-      md5: f4a28fef2a87492fccd3db42f4b92015
-      size: 97583
+      md5: 271e4468e0e652d7e72f29da31cdcac0
+      size: 125453
+      isexec: true
     - path: results/roc_auc.png
-      md5: b5ea4dc024a273d542cd65c6bb0e8bc7
-      size: 55583
+      md5: aa48ca74535324fba29aa662349e05fa
+      size: 55921
+      isexec: true
     - path: results/scores.json
-      md5: 1ad69d3d8b43d2ac8893999da4d4d024
+      md5: ee858275cd22fae0d610551fd0fd02d8
       size: 77
+      isexec: true
   print:
     cmd: cat params.yaml
   print-params:
@@ -111,7 +121,7 @@ stages:
       md5: bcb9c918fd8ea152052302d7c4b3dda4
       size: 9230
     - path: results/scores.json
-      md5: 1ad69d3d8b43d2ac8893999da4d4d024
+      md5: ee858275cd22fae0d610551fd0fd02d8
       size: 77
     outs:
     - path: results/index.html
@@ -131,10 +141,10 @@ stages:
       md5: aa9bbda3d626c4b58a4bac58ec64a922
       size: 4611
     - path: results/scores.json
-      md5: 1ad69d3d8b43d2ac8893999da4d4d024
+      md5: ee858275cd22fae0d610551fd0fd02d8
       size: 77
     outs:
     - path: results/table.md
-      md5: 5a941f76922dd1895c7085b62abaa3d4
-      size: 10903
+      md5: b469438a426f5ce2eb5c98f947c83f92
+      size: 11219
       isexec: true

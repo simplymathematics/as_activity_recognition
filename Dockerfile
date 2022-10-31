@@ -8,6 +8,6 @@ RUN apt install -y python3 python3-pip build-essential libssl-dev libffi-dev pyt
 ADD . /project
 WORKDIR /project
 RUN python3 -m pip install -r requirements.txt
-RUN dvc repro
+RUN dvc repro --force
 WORKDIR /project/results
 CMD ["python3", "-m", "http.server", "8000"]

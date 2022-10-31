@@ -25,7 +25,6 @@ stages:
     - path: classify.py
       md5: 6d404b4f5cc6ba84b20ad6cd49b74a1e
       size: 9234
-      isexec: true
     - path: data
       md5: 88567c43de8f1bcf1f59f642fb747c55.dir
       size: 25417776
@@ -74,43 +73,33 @@ stages:
     - path: results/balance.png
       md5: 5f82e0991a5916369fe88dfdc804d73c
       size: 17485
-      isexec: true
     - path: results/classification.png
       md5: 662579610b08764993f0164aa4525d8a
       size: 30003
-      isexec: true
     - path: results/confusion.png
       md5: 45e3aee0fb05b4e905a1d944294b26a5
       size: 26716
-      isexec: true
     - path: results/cross_validation.png
       md5: ae3de37a7a182fdd66ac933443ead785
       size: 25117
-      isexec: true
     - path: results/cv_scores.csv
       md5: bccfad83ae0ed2e4b80506f2abe739f3
       size: 151075
-      isexec: true
     - path: results/dropping.png
       md5: 99f783ae7c341abb58c30ded5eeb835c
       size: 59627
-      isexec: true
     - path: results/learning.png
       md5: ff14af1d206245277bf622172bbfe1a3
       size: 47687
-      isexec: true
     - path: results/pca.png
       md5: 80f9efec458991e25c0f64993d30ec5d
       size: 119748
-      isexec: true
     - path: results/roc_auc.png
       md5: 7c78120fdefc91b8b3a28915a4f85037
       size: 56288
-      isexec: true
     - path: results/scores.json
       md5: 0b02bec48199608e2fb662df3e067523
       size: 77
-      isexec: true
   print:
     cmd: cat params.yaml
   print-params:
@@ -146,6 +135,6 @@ stages:
       size: 77
     outs:
     - path: results/table.md
-      md5: c5c45f278dc783e49790b16800dbc1dd
-      size: 12009
+      md5: d57fe75ca5ea9c3575d91473a2ef1026
+      size: 12641
       isexec: true

@@ -39,10 +39,10 @@ DVC docs are [here](https://dvc.org).
 ```bash driver.sh``` pull in the data, display the pipeline, run an experiment, render the results, and start a server on port `8000`.
 
 ### Docker 
-If none of that works for you, you can use docker to build the dependencies. Remember to start the docker daemon.
-``` docker build -t as_recognition:latest .```
-which will take some time. 
-Then you should run:
-``` docker run -p 8000:8000 as_recognition:latest```
-and you can open your browser to [this page](localhost:8000) (link only viewable locally). 
-Remember to stop the container when you're finished browsing.
+If none of that works for you, you can use docker to build the dependencies. Remember to start the docker daemon. Run:  
+``` docker build -t as_recognition:latest .```  
+which will take some time.   
+Then you should run:  
+``` docker run -p 8000:8000 as_recognition:latest```  
+and you can open your browser to [this page](localhost:8000) (link only viewable locally).   
+Remember to stop the container when you're finished browsing.  

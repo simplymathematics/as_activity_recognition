@@ -17,22 +17,22 @@ flowchart TD
 	model["model"]
 	params["params.yaml"]
 	reports["reports"]
+	plots["plots"]
+	webpage["results/index.html"]
+	
 
-	params-->raw
-	params-->feat
-	params-->pre
-	params-->sel
-	params-->model
-	params-->reports
 
 	subgraph preprocess.py
 	raw-->feat
 	end
 	feat-->pre
 	subgraph classify.py
-	pre-->sel-->model-->reports
+	pre-->sel-->model-->reports-->plots-->webpage
 	end
+	params-->preprocess.py
+	params-->classify.py
 	end
+	
 ```
 DVC docs are [here](https://dvc.org).
 

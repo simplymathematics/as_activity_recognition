@@ -42,7 +42,8 @@ result: # result path
   path: results
   test: data/features/test_data.npz
   scores: scores.json
-  cv: cv_scores.json
+  cv: cv_scores.csv
+  model : model.pickle
 search:
   name : sklearn.model_selection.GridSearchCV
   refit : True

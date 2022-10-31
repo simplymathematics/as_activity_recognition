@@ -44,5 +44,5 @@ If none of that works for you, you can use docker to build the dependencies. Rem
 which will take some time. 
 Then you should run:
 ``` docker run -p 8000:8000 as_recognition:latest```
-and you can open your browser to [this page](localhost:8000). 
+and you can open your browser to [this page](localhost:8000) (link only viewable locally). 
 Remember to stop the container when you're finished browsing.

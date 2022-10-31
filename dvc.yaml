@@ -37,7 +37,7 @@ stages:
     outs:
     - ${result.path}/${result.cv}
   plot:
-    cmd: dvc plots show -o ${result.path}
+    cmd: dvc plots show -o ${result.path} --html-template ${result.path}/template.html
     deps:
     - classify.py
     - ${result.path}/${result.scores}
@@ -50,7 +50,3 @@ stages:
     - ${result.path}/${result.scores}
     outs:
     - ${result.path}/table.md
-  # server:
-  #   cmd: cd results  && python -m http.server &
-  #   deps:
-  #   - results/index.html

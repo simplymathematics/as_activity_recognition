@@ -7,8 +7,8 @@ stages:
       md5: 05061832277bcebe4cde53dfd13fbde6
       size: 2843808
     - path: pre_process.py
-      md5: 2792334a983b361240cf1cd22fc8fefb
-      size: 6166
+      md5: 9963780b0fcce3d2e69cdb3145cb3476
+      size: 6342
     params:
       params.yaml:
         preprocessing.key: acc
@@ -16,17 +16,18 @@ stages:
         preprocessing.window: 10
     outs:
     - path: data
-      md5: e5706d4280695b8c37664f1588c58131.dir
+      md5: 88567c43de8f1bcf1f59f642fb747c55.dir
       size: 25417776
       nfiles: 34
   classify:
     cmd: python3 classify.py
     deps:
     - path: classify.py
-      md5: bcb9c918fd8ea152052302d7c4b3dda4
-      size: 9230
+      md5: 6d404b4f5cc6ba84b20ad6cd49b74a1e
+      size: 9234
+      isexec: true
     - path: data
-      md5: e5706d4280695b8c37664f1588c58131.dir
+      md5: 88567c43de8f1bcf1f59f642fb747c55.dir
       size: 25417776
       nfiles: 34
     params:
@@ -71,43 +72,43 @@ stages:
           - true
     outs:
     - path: results/balance.png
-      md5: 430eea2d627ff7ab9c787c086bdafcc5
+      md5: 5f82e0991a5916369fe88dfdc804d73c
       size: 17485
       isexec: true
     - path: results/classification.png
-      md5: 8d64fb5a76a5d5350beaa41e7599fd66
-      size: 28044
+      md5: 662579610b08764993f0164aa4525d8a
+      size: 30003
       isexec: true
     - path: results/confusion.png
-      md5: f49b13bc84a3610e8419257130255c0f
-      size: 26413
+      md5: 45e3aee0fb05b4e905a1d944294b26a5
+      size: 26716
       isexec: true
     - path: results/cross_validation.png
-      md5: 4f634e5916bdc1dc9c7fe6afcfeaa7b4
-      size: 25086
+      md5: ae3de37a7a182fdd66ac933443ead785
+      size: 25117
       isexec: true
-    - path: results/cv_scores.json
-      md5: 5b8ef236768e53bb08d22f90d2260245
-      size: 151544
+    - path: results/cv_scores.csv
+      md5: bccfad83ae0ed2e4b80506f2abe739f3
+      size: 151075
       isexec: true
     - path: results/dropping.png
-      md5: eea8e36639461c0da9833c31b1247001
-      size: 55318
+      md5: 99f783ae7c341abb58c30ded5eeb835c
+      size: 59627
       isexec: true
     - path: results/learning.png
-      md5: 29e7a64ec1fcd7412b2ea7a4c7d712e4
-      size: 46635
+      md5: ff14af1d206245277bf622172bbfe1a3
+      size: 47687
       isexec: true
     - path: results/pca.png
-      md5: 271e4468e0e652d7e72f29da31cdcac0
-      size: 125453
+      md5: 80f9efec458991e25c0f64993d30ec5d
+      size: 119748
       isexec: true
     - path: results/roc_auc.png
-      md5: aa48ca74535324fba29aa662349e05fa
-      size: 55921
+      md5: 7c78120fdefc91b8b3a28915a4f85037
+      size: 56288
       isexec: true
     - path: results/scores.json
-      md5: ee858275cd22fae0d610551fd0fd02d8
+      md5: 0b02bec48199608e2fb662df3e067523
       size: 77
       isexec: true
   print:
@@ -115,18 +116,18 @@ stages:
   print-params:
     cmd: cat params.yaml
   plot:
-    cmd: dvc plots show -o results
+    cmd: dvc plots show -o results --html-template results/template.html
     deps:
     - path: classify.py
-      md5: bcb9c918fd8ea152052302d7c4b3dda4
-      size: 9230
+      md5: 6d404b4f5cc6ba84b20ad6cd49b74a1e
+      size: 9234
     - path: results/scores.json
-      md5: ee858275cd22fae0d610551fd0fd02d8
+      md5: 0b02bec48199608e2fb662df3e067523
       size: 77
     outs:
     - path: results/index.html
-      md5: aa9bbda3d626c4b58a4bac58ec64a922
-      size: 4611
+      md5: d6ef553e4abdcaad6ce0cbb752ccf875
+      size: 4798
       isexec: true
   server:
     cmd: cd results  && python -m http.server &
@@ -138,13 +139,13 @@ stages:
     cmd: dvc metrics show --all-branches --all-commits --md > results/table.md
     deps:
     - path: results/index.html
-      md5: aa9bbda3d626c4b58a4bac58ec64a922
-      size: 4611
+      md5: d6ef553e4abdcaad6ce0cbb752ccf875
+      size: 4798
     - path: results/scores.json
-      md5: ee858275cd22fae0d610551fd0fd02d8
+      md5: 0b02bec48199608e2fb662df3e067523
       size: 77
     outs:
     - path: results/table.md
-      md5: b469438a426f5ce2eb5c98f947c83f92
-      size: 11219
+      md5: c5c45f278dc783e49790b16800dbc1dd
+      size: 12009
       isexec: true

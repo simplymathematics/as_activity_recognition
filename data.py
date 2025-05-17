@@ -3,7 +3,6 @@ from sklearn.datasets import (
     make_blobs,
     make_moons,
     make_classification,
-    load_boston,
     load_iris,
     load_diabetes,
     load_wine,
@@ -20,7 +19,6 @@ generated = {
     "classification": make_classification,
 }
 real = {
-    "boston": load_boston,
     "iris": load_iris,
     "diabetes": load_diabetes,
     "wine": load_wine,

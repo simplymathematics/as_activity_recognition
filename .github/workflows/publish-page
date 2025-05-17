@@ -1,0 +1,54 @@
+name: Deploy index.html to gh-pages
+
+on:
+  push:
+    branches:
+      - main  # Change if your default branch is not 'main'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Set up virtual environment
+        run: |
+          python -m venv env
+          source env/bin/activate
+
+      - name: Install requirements
+        run: |
+          source env/bin/activate
+          python -m pip install -r requirements.txt
+
+      - name: Install dvc-gdrive
+        run: |
+          source env/bin/activate
+          python -m pip install dvc-gdrive
+
+      - name: Install specific protobuf version
+        run: |
+          source env/bin/activate
+          python -m pip install protobuf==3.20.0
+
+      - name: DVC pull or repro and push
+        run: |
+          source env/bin/activate
+          dvc pull || (dvc repro && dvc push)
+
+      - name: Deploy index.html to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .  # index.html is in the root
+          publish_branch: gh-pages
+          force_orphan: true  # optional, overwrites history in gh-pages
+          enable_jekyll: false  # prevents GitHub Pages from ignoring files starting with "_"
+
